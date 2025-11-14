@@ -17,8 +17,14 @@ async def telnyx_webhook(request: Request):
         call_control_id = data.get('payload', {}).get('call_control_id')
         
         if event_type == "call.initiated":
-            telnyx.Call.answer(call_control_id)
-            print(f"Answered call: {call_control_id}")
+            print(f"Call initiated: {call_control_id}")
+            # Only answer if we have a valid API key and this is a real call
+            if telnyx.api_key and call_control_id != "test-call-123":
+                try:
+                    telnyx.Call.answer(call_control_id)
+                    print(f"Answered call: {call_control_id}")
+                except Exception as e:
+                    print(f"Error answering call: {e}")
         
         elif event_type == "call.answered":
             print(f"Call answered: {call_control_id}")
